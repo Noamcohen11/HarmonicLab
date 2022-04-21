@@ -12,11 +12,11 @@
 plot_every_mass = 1;
 distance_error_range = 0.0172;
 results_addr = {
-    'D:\labs\simulation\lab_2\csv_files\5 G part 2.csv',
-    'D:\labs\simulation\lab_2\csv_files\10 G part 2.csv',
-    'D:\labs\simulation\lab_2\csv_files\14.6 G part 2.csv',
-    'D:\labs\simulation\lab_2\csv_files\20 G part 1.csv',
-    'D:\labs\simulation\lab_2\csv_files\84 G part 2.csv',
+    'D:\labs\simulation\lab_2\csv_files\5 G part 2.csv';
+    'D:\labs\simulation\lab_2\csv_files\10 G part 2.csv';
+    'D:\labs\simulation\lab_2\csv_files\14.6 G part 2.csv';
+    'D:\labs\simulation\lab_2\csv_files\20 G part 1.csv';
+    'D:\labs\simulation\lab_2\csv_files\84 G part 2.csv';
     };
 
 %% code:
