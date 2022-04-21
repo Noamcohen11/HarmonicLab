@@ -82,7 +82,9 @@ gravity_force_error = -1.*(GravityForce(mass + mass_error') - GravityForce(mass)
 figure 
 hold on
 
-graph = plot([0; X] , 53.56*[0; X], 'color', 'blue');
+f = fittype('a.*x + b','coefficients', {'a', 'b'});
+final_fit = fit(X, gravity_force, f);
+graph = plot(final_fit, 'b');
 errorbar(X, gravity_force, gravity_force_error, gravity_force_error, X_error, X_error, 'color','blue','LineStyle','none', 'LineWidth', 2)
 
 legend(graph,'K const fit', 'mg results')
