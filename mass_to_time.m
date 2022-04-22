@@ -12,11 +12,11 @@
 plot_every_mass = 1;
 distance_error_range = 0.0172;
 lab_results = {
-    'D:\labs\simulation\lab_2\csv_files\5 G part 2.csv'     , 0.005;
-    'D:\labs\simulation\lab_2\csv_files\10 G part 2.csv'    , 0.01;
-    'D:\labs\simulation\lab_2\csv_files\14.6 G part 2.csv'  , 0.0146;
-    'D:\labs\simulation\lab_2\csv_files\20 G part 1.csv'    , 0.02;
-    %'D:\labs\simulation\lab_2\csv_files\84 G part 2.csv'    , 0.0847;
+    'csv_files\5 G part 2.csv'     , 0.005;
+    'csv_files\10 G part 2.csv'    , 0.01;
+    'csv_files\14.6 G part 2.csv'  , 0.0146;
+    'csv_files\20 G part 1.csv'    , 0.02;
+    %'csv_files\84 G part 2.csv'    , 0.0847;
     };
 
 %% code:
@@ -69,7 +69,6 @@ for i = 1:size(lab_results,1)
         hold on
         % Plot peaks
         plot(final_fit,locs, pks, 'o')
-        text(locs+.02,pks,num2str((1:numel(pks))'))
         hold off
         grid
         box on
@@ -85,7 +84,7 @@ for i = 1:size(lab_results,1)
         grid
         box on
         xlabel('peaks time(S)')
-        ylabel('peaks(m)')
+        ylabel('peaks(M)')
         legend('peaks', 'Fitted Curve')
         hold off
     end
@@ -97,6 +96,10 @@ figure
 mass = cell2mat(lab_results(:,2))';
 plot(cell2mat(lab_results(:,2))',2*pi./CycleTime, '.')
 hold on
+xlabel('Mass(KG)')
+ylabel('omega(Rad/S)')
+legend('peaks', 'Fitted Curve')
+hold off
 
 function f = DampedHarmonic_fit(x, y)
     %% Get fit parametes:
