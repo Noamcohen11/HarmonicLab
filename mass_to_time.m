@@ -16,7 +16,7 @@ lab_results = {
     'csv_files\10 G part 2.csv'    , 0.01;
     'csv_files\14.6 G part 2.csv'  , 0.0146;
     'csv_files\20 G part 1.csv'    , 0.02;
-    %'csv_files\84 G part 2.csv'    , 0.0847;
+    %'csv_files\84 G part 2.csv'    , 0.0847;   
     };
 
 %% code:
@@ -57,10 +57,9 @@ for i = 1:size(lab_results,1)
     amplitude_fit = DampedAmplitudeFit(locs,pks);
     peak_error = zeros(1,length(locs)) + distance_error_range;
     time_error = zeros(1,length(locs));
-    CycleTime(i) = 2*pi/mean(diff(locs(2:10)));
-    %fit_values = coeffvalues(final_fit);
-    %CycleTime(i) = fit_values(3);
-    
+    %CycleTime(i) = mean(diff(locs(2:10)));
+    fit_values = coeffvalues(final_fit)
+    CycleTime(i) = fit_values(3);
     %% Plot per mass:
     if plot_every_mass
         figure
@@ -83,7 +82,7 @@ for i = 1:size(lab_results,1)
         plot(amplitude_fit)
         grid
         box on
-        xlabel('peaks time(S)')
+        xlabel('Time(S)')
         ylabel('peaks(M)')
         legend('peaks', 'Fitted Curve')
         hold off

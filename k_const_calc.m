@@ -83,14 +83,14 @@ figure
 hold on
 
 f = fittype('a.*x + b','coefficients', {'a', 'b'});
-final_fit = fit(X, gravity_force, f);
+final_fit = fit(gravity_force, X, f);
 graph = plot(final_fit, 'b');
-errorbar(X, gravity_force, gravity_force_error, gravity_force_error, X_error, X_error, 'color','blue','LineStyle','none', 'LineWidth', 2)
+errorbar(gravity_force, X,X_error, X_error, gravity_force_error, gravity_force_error, 'color','blue','LineStyle','none', 'LineWidth', 2)
 
 legend(graph,'K const fit', 'mg results')
 grid on
 box on
-ylabel('MG(N)','FontSize',13)
-xlabel('X(M)','FontSize',13)
+ylabel('X(M)','FontSize',13)
+xlabel('MG(N)','FontSize',13)
 
 hold off
