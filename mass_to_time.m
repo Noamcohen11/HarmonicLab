@@ -10,12 +10,12 @@
 
 %% Parameters:
 plot_every_mass = 1;
-distance_error_range = 0.0172;
+distance_error_range = 0.0172 /100;
 lab_results = {
-    'csv_files\5 G part 2.csv'     , 0.005;
-    'csv_files\10 G part 2.csv'    , 0.01;
+    'csv_files\5 G part 2.csv'     , 0.0048;
+    'csv_files\10 G part 2.csv'    , 0.098;
     'csv_files\14.6 G part 2.csv'  , 0.0146;
-    'csv_files\20 G part 1.csv'    , 0.02;
+    %'csv_files\20 G part 1.csv'    , 0.0199;
     %'csv_files\84 G part 2.csv'    , 0.0847;   
     };
 
@@ -43,13 +43,15 @@ for i = 1:size(lab_results,1)
     
     %Remove data captured after the experiment ends:
     act_zero = abs(y(length(y)))+distance_error_range;
-    for j = 60:length(x)
+    for j = 61:length(x)
         if (abs(y(j))<act_zero) && (abs(y(j-60))<act_zero) 
             x(j:length(x)) = [];
             y(j:length(y)) = [];
         break
         end
     end
+
+    y = y./100;
     
     final_fit = DampedHarmonic_fit(x,y);
     % Find peaks:
