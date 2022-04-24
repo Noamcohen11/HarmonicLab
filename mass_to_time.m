@@ -10,12 +10,21 @@
 
 %% Parameters:
 plot_every_mass = 1;
+work_in_cm = 1;
 distance_error_range = 0.0172 /100;
 lab_results = {
-    'csv_files\5 G part 2.csv'     , 0.0048;
+    %'csv_files\5 G part 2.csv'     , 0.0048;
     'csv_files\10 G part 2.csv'    , 0.098;
-    'csv_files\14.6 G part 2.csv'  , 0.0146;
+    %'csv_files\14.6 G part 2.csv'  , 0.0146;
     %'csv_files\20 G part 1.csv'    , 0.0199;
+    %'csv_files\25G.csv'             , 0.0247;
+    %'csv_files\30G.csv'             , 0.0297;
+    % 'csv_files\35G.csv'             , 0.0345;
+    % 'csv_files\50.2 G.csv'             , 0.0502;
+    % 'csv_files\55G.csv'             , 0.055;
+    % 'csv_files\60G.csv'             , 0.060;
+    % 'csv_files\64.8G.csv'            , 0.0648;
+    %'csv_files\70.1G.csv'           , 0.0701;
     %'csv_files\84 G part 2.csv'    , 0.0847;   
     };
 
@@ -50,9 +59,11 @@ for i = 1:size(lab_results,1)
         break
         end
     end
-
-    y = y./100;
     
+    if work_in_cm
+        y = y./100;
+    end
+
     final_fit = DampedHarmonic_fit(x,y);
     % Find peaks:
     [pks,locs] = findpeaks(y,x);
