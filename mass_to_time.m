@@ -10,20 +10,23 @@
 
 %% Parameters:
 plot_every_mass = 1;
-work_in_cm = 1;
-distance_error_range = 0.0172 /100;
+distance_units_in_meters= 1;
+time_units_in_secs = 1;
+distance_error_range = 0.000172/distance_units_in_meters;
+
+%resutls = {path, mass in kg}
 lab_results = {
-    %'csv_files\5 G part 2.csv'     , 0.0048;
-    'csv_files\10 G part 2.csv'    , 0.098;
+    'csv_files\5 G part 2.csv'     , 0.0048;
+    %'csv_files\10 G part 2.csv'    , 0.098;
     %'csv_files\14.6 G part 2.csv'  , 0.0146;
     %'csv_files\20 G part 1.csv'    , 0.0199;
     %'csv_files\25G.csv'             , 0.0247;
     %'csv_files\30G.csv'             , 0.0297;
-    % 'csv_files\35G.csv'             , 0.0345;
-    % 'csv_files\50.2 G.csv'             , 0.0502;
-    % 'csv_files\55G.csv'             , 0.055;
-    % 'csv_files\60G.csv'             , 0.060;
-    % 'csv_files\64.8G.csv'            , 0.0648;
+    %'csv_files\35G.csv'             , 0.0345;
+    %'csv_files\50.2 G.csv'             , 0.0502;
+    %'csv_files\55G.csv'             , 0.055;
+    %'csv_files\60G.csv'             , 0.060;
+    %'csv_files\64.8G.csv'            , 0.0648;
     %'csv_files\70.1G.csv'           , 0.0701;
     %'csv_files\84 G part 2.csv'    , 0.0847;   
     };
@@ -39,29 +42,43 @@ for i = 1:size(lab_results,1)
     results = readtable(string(lab_results(i,1)));
     y = results{:,2};
     x = results{:,1};
+    
+    %% Fix data
+    %Fix units
+    y = y/distance_units_in_meters;
+    x = x/time_units_in_secs;
+
+    %Fix zero
+    graph_zero = y(length(y));
+    if abs(graph_zero) > distance_error_range
+        for j = 1:length(y)
+            y(j) = y(j) - graph_zero;
+        end
+    end
+
 
     %% Remove unwanted data
 
     % Remove data captured before the experiment begins:
-    init_wave = find(y == min(y));
+    if find(y == max(y)) < find(y == min(y))
+        init_wave = find(y == max(y));
+    else
+        init_wave = find(y == min(y));
+    end
     x = x-x(init_wave);
-    for j = 1:init_wave-1
+    for j = 1:init_wave-3
         x(1) = [];
         y(1) = [];
     end
-    
+
     %Remove data captured after the experiment ends:
-    act_zero = abs(y(length(y)))+distance_error_range;
-    for j = 61:length(x)
-        if (abs(y(j))<act_zero) && (abs(y(j-60))<act_zero) 
+    for j = 60:length(x)
+        if (abs(y(j))<distance_error_range) && (abs(y(j-59))<distance_error_range)
+            y(j)
             x(j:length(x)) = [];
             y(j:length(y)) = [];
         break
         end
-    end
-    
-    if work_in_cm
-        y = y./100;
     end
 
     final_fit = DampedHarmonic_fit(x,y);
@@ -71,7 +88,7 @@ for i = 1:size(lab_results,1)
     peak_error = zeros(1,length(locs)) + distance_error_range;
     time_error = zeros(1,length(locs));
     %CycleTime(i) = mean(diff(locs(2:10)));
-    fit_values = coeffvalues(final_fit)
+    fit_values = coeffvalues(final_fit);
     CycleTime(i) = fit_values(3);
     %% Plot per mass:
     if plot_every_mass
@@ -101,7 +118,6 @@ for i = 1:size(lab_results,1)
         hold off
     end
 end
-
 
 %% Plot for all mass
 figure
