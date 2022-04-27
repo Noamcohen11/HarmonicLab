@@ -37,92 +37,93 @@ lab_results = {
 CycleTime = zeros(1,size(lab_results,1));
 
 for i = 1:size(lab_results,1)
-
-    %% Grab lab lab_results
-    results = readtable(string(lab_results(i,1)));
-    y = results{:,2};
-    x = results{:,1};
-    x = rmmissing(x);
-    y = rmmissing(y);
-    
-    %% Fix data
-    %Fix units
-    y = y/distance_units_in_meters;
-    x = x/time_units_in_secs;
-
-    %Fix zero
-    graph_zero = y(length(y));
-    if abs(graph_zero) > distance_error_range
-        for j = 1:length(y)
-            y(j) = y(j) - graph_zero;
-        end
-    end
-    
-
-    %% Remove unwanted data
-
-    % Remove data captured before the experiment begins:
-    if find(y == max(y)) < find(y == min(y))
-        init_wave = find(y == max(y));
-    else
-        init_wave = find(y == max(y));
-    end
-    x = x-x(init_wave);
-    for j = 1:init_wave-3
-        x(1) = [];
-        y(1) = [];
-    end
-
-    %Remove data captured after the experiment ends:
-    for j = 60:length(x)
-        if (abs(y(j))<distance_error_range) && (abs(y(j-5))<distance_error_range)
-            x(j:length(x)) = [];
-            y(j:length(y)) = [];
-        break
-        end
-    end
-
-    %Remove data repeatitions
-    [b,m1,n1] = unique(x,'first');
-    [c1,d1] =sort(m1);
-    x = b(d1);
-    y = y(m1);
-    final_fit = DampedHarmonic_fit(x,y);
-
-    % Find peaks:
-    [pks,locs] = findpeaks(y,x);
-    amplitude_fit = DampedAmplitudeFit(locs,pks);
-    peak_error = zeros(1,length(locs)) + distance_error_range;
-    time_error = zeros(1,length(locs));
-    %CycleTime(i) = mean(diff(locs(2:10)));
-    fit_values = coeffvalues(final_fit);
-    CycleTime(i) = fit_values(3);
-    %% Plot per mass:
-    if plot_every_mass
-        figure
-        % Plot actual points:
-        plot(x,y, '.')
-        hold on
-        % Plot peaks
-        plot(final_fit,locs, pks, 'o')
-        hold off
-        grid
-        box on
-        xlabel('Time(S)')
-        ylabel('Distance(M)')
-        legend('Original Data', 'peaks', 'Fitted Curve')
+    for k = 0:fix(size(results,2)/4)
+        %% Grab lab lab_results
+        results = readtable(string(lab_results(i,1)));
+        y = results{:,2+k*4};
+        x = results{:,1+k*4};
+        x = rmmissing(x);
+        y = rmmissing(y);
         
-        %Plot peaks per time
-        figure
-        hold on
-        errorbar(locs, pks, peak_error, peak_error, time_error, time_error, 'color','magenta','LineStyle','none', 'LineWidth', 2)
-        plot(amplitude_fit)
-        grid
-        box on
-        xlabel('Time(S)')
-        ylabel('peaks(M)')
-        legend('peaks', 'Fitted Curve')
-        hold off
+        %% Fix data
+        %Fix units
+        y = y/distance_units_in_meters;
+        x = x/time_units_in_secs;
+        
+        %Fix zero
+        graph_zero = y(length(y));
+        if abs(graph_zero) > distance_error_range
+            for j = 1:length(y)
+                y(j) = y(j) - graph_zero;
+            end
+        end
+        
+        
+        %% Remove unwanted data
+        
+        % Remove data captured before the experiment begins:
+        if find(y == max(y)) < find(y == min(y))
+            init_wave = find(y == max(y));
+        else
+            init_wave = find(y == max(y));
+        end
+        x = x-x(init_wave);
+        for j = 1:init_wave-3
+            x(1) = [];
+            y(1) = [];
+        end
+        
+        %Remove data captured after the experiment ends:
+        for j = 60:length(x)
+            if (abs(y(j))<distance_error_range) && (abs(y(j-5))<distance_error_range)
+                x(j:length(x)) = [];
+                y(j:length(y)) = [];
+            break
+            end
+        end
+        
+        %Remove data repeatitions
+        [b,m1,n1] = unique(x,'first');
+        [c1,d1] =sort(m1);
+        x = b(d1);
+        y = y(m1);
+        final_fit = DampedHarmonic_fit(x,y);
+        
+        % Find peaks:
+        [pks,locs] = findpeaks(y,x);
+        amplitude_fit = DampedAmplitudeFit(locs,pks);
+        peak_error = zeros(1,length(locs)) + distance_error_range;
+        time_error = zeros(1,length(locs));
+        %CycleTime(i) = mean(diff(locs(2:10)));
+        fit_values = coeffvalues(final_fit);
+        CycleTime(i) = fit_values(3);
+        %% Plot per mass:
+        if plot_every_mass
+            figure
+            % Plot actual points:
+            plot(x,y, '.')
+            hold on
+            % Plot peaks
+            plot(final_fit,locs, pks, 'o')
+            hold off
+            grid
+            box on
+            xlabel('Time(S)')
+            ylabel('Distance(M)')
+            legend('Original Data', 'peaks', 'Fitted Curve')
+            
+            %Plot peaks per time
+            figure
+            hold on
+            errorbar(locs, pks, peak_error, peak_error, time_error, time_error, 'color','magenta','LineStyle','none', 'LineWidth', 2)
+            plot(amplitude_fit)
+            grid
+            box on
+            xlabel('Time(S)')
+            ylabel('peaks(M)')
+            legend('peaks', 'Fitted Curve')
+            hold off
+        end
     end
 end
 
