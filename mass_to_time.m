@@ -12,15 +12,15 @@
 plot_every_mass = 1;
 distance_units_in_meters= 1;
 time_units_in_secs = 1;
-distance_error_range = 0.000172/distance_units_in_meters;
+distance_error_range = 0.000172;
 
 %resutls = {path, mass in kg}
 lab_results = {
-    'csv_files\5 G part 2.csv'     , 0.0048;
+    %'csv_files\5 G part 2.csv'     , 0.0048;
     %'csv_files\10 G part 2.csv'    , 0.098;
     %'csv_files\14.6 G part 2.csv'  , 0.0146;
     %'csv_files\20 G part 1.csv'    , 0.0199;
-    %'csv_files\25G.csv'             , 0.0247;
+    'csv_files\25G.csv'             , 0.0247;
     %'csv_files\30G.csv'             , 0.0297;
     %'csv_files\35G.csv'             , 0.0345;
     %'csv_files\50.2 G.csv'             , 0.0502;
@@ -42,6 +42,8 @@ for i = 1:size(lab_results,1)
     results = readtable(string(lab_results(i,1)));
     y = results{:,2};
     x = results{:,1};
+    x = rmmissing(x);
+    y = rmmissing(y);
     
     %% Fix data
     %Fix units
@@ -55,7 +57,7 @@ for i = 1:size(lab_results,1)
             y(j) = y(j) - graph_zero;
         end
     end
-
+    
 
     %% Remove unwanted data
 
@@ -63,7 +65,7 @@ for i = 1:size(lab_results,1)
     if find(y == max(y)) < find(y == min(y))
         init_wave = find(y == max(y));
     else
-        init_wave = find(y == min(y));
+        init_wave = find(y == max(y));
     end
     x = x-x(init_wave);
     for j = 1:init_wave-3
@@ -73,15 +75,20 @@ for i = 1:size(lab_results,1)
 
     %Remove data captured after the experiment ends:
     for j = 60:length(x)
-        if (abs(y(j))<distance_error_range) && (abs(y(j-59))<distance_error_range)
-            y(j)
+        if (abs(y(j))<distance_error_range) && (abs(y(j-5))<distance_error_range)
             x(j:length(x)) = [];
             y(j:length(y)) = [];
         break
         end
     end
 
+    %Remove data repeatitions
+    [b,m1,n1] = unique(x,'first');
+    [c1,d1] =sort(m1);
+    x = b(d1);
+    y = y(m1);
     final_fit = DampedHarmonic_fit(x,y);
+
     % Find peaks:
     [pks,locs] = findpeaks(y,x);
     amplitude_fit = DampedAmplitudeFit(locs,pks);
