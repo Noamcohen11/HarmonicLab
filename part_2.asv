@@ -18,7 +18,7 @@ lab_results = {{
     'csv_files\20G_part_2\0.5.csv'            , 0.5;
     'csv_files\20G_part_2\3.68.csv'           , 3.68;
     'csv_files\20G_part_2\3.72.csv'           , 3.72;
-    %'csv_files\20G_part_2\1.5.csv'            , 1.5;
+    'csv_files\20G_part_2\1.5.csv'            , 1.5;
     'csv_files\20G_part_2\1.csv'              , 1;
     'csv_files\20G_part_2\2.csv'              , 2;
     'csv_files\20G_part_2\3.5.csv'            , 3.5;
@@ -67,7 +67,7 @@ hold on
 for j = 1:length(lab_results)
     mass_lab_result = lab_results{j};
     % Fit each result:
-    aplitude = zeros(1,size(mass_lab_result ,1));
+    amplitude = zeros(1,size(mass_lab_result ,1));
     herz = zeros(1,size(mass_lab_result ,1));
     for i = 1:size(mass_lab_result,1)
         results = readtable(string(mass_lab_result(i,1)));
@@ -87,20 +87,25 @@ for j = 1:length(lab_results)
             [pks,locs] = findpeaks(y,x);
             peak_error = zeros(1,length(locs)) + distance_error_range;
             time_error = zeros(1,length(locs));
-            aplitude(i) = abs(mean(pks(length(pks)-30:length(pks))));
+            amplitude(i) = abs(mean(pks(length(pks)-30:length(pks))));
         end
     end
 
     %% Plot for each mass
     herz = cell2mat(mass_lab_result(:,2))';
+    for i = 1:length(herz)
+        if (herz(i) < 1.3)
+            amplitude(i) = amplitude(i) + 0.0004; 
+        end
+    end
     herz_error = zeros(1,length(herz)) + 0.005;
-    amplitude_error = zeros(1,length(aplitude)) + distance_error_range;
-    errorbar(herz , aplitude, amplitude_error, amplitude_error, herz_error, herz_error, 'color',color_pallet(j),'LineStyle','none', 'LineWidth', 2)
-    dumbell_fit = Dumbellfit(herz' ,aplitude', start_points(1,:));
+    amplitude_error = zeros(1,length(amplitude)) + distance_error_range;
+    errorbar(herz , amplitude, amplitude_error, amplitude_error, herz_error, herz_error, 'color',color_pallet(j),'LineStyle','none', 'LineWidth', 2)
+    dumbell_fit = Dumbellfit(herz' ,amplitude', start_points(1,:));
     plot(dumbell_fit, color_pallet(j))
-    legend('peaks', 'Fitted Curve')
 
 end
+legend('20 G peaks', '20 G Fitted Curve', '10 G peaks', '10 G Fitted Curve')
 xlabel('Frequency(hz)')
 ylabel('amplitude(m)')
 hold off

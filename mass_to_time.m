@@ -9,20 +9,21 @@
 % Prints goodness of fit and plot
 
 %% Parameters:
-plot_every_mass = 1;
+plot_every_mass = 0;
 distance_units_in_meters= 1;
 time_units_in_secs = 1;
+pole_weight = 0.077;
 distance_error_range = 0.000172;
 image_save_path = 'G:\My Drive\results\';
 add_linear_damp = 0;
-
+mass_error = [5.00000000000000e-05	5.00000000000000e-05	7.07106781186548e-05	0.000100000000000000	0.000122474487139159	0.000100000000000000	0.000111803398874989	0.000122474487139159	0.000111803398874989	0.000158113883008419	0.000141421356237310	0.000150000000000000];
 %resutls = {path, mass in kg}
 lab_results = {
        'csv_files\5 G part 2.csv'     , 0.0048;
        'csv_files\10 G part 2.csv'    , 0.0098;
        'csv_files\14.6 G part 2.csv'  , 0.0146;
        'csv_files\20 G part 1.csv'    , 0.0199;
-       'csv_files\25G.csv'             , 0.0247;
+       %'csv_files\25G.csv'             , 0.0247;
        'csv_files\30G.csv'             , 0.0297;
        'csv_files\35G.csv'             , 0.0345;
        'csv_files\50.2 G.csv'          , 0.0502;
@@ -37,6 +38,7 @@ lab_results = {
 % Fit each result:
 
 CycleTime = zeros(1,size(lab_results,1));
+fit_error_range = zeros(1,size(lab_results,1));
 damp_style = 'clean_';
 if add_linear_damp
     damp_style = 'lin_';
@@ -100,9 +102,11 @@ for i = 1:size(lab_results,1)
         amplitude_fit = DampedAmplitudeFit(locs,pks, add_linear_damp);
         peak_error = zeros(1,length(locs)) + distance_error_range;
         time_error = zeros(1,length(locs));
-        %CycleTime(i) = mean(diff(locs(2:10)));
+        CycleTime(i) = mean(diff(locs(2:10)));
         fit_values = coeffvalues(final_fit);
-        CycleTime(i) = fit_values(3);
+        conf = confint(final_fit);        
+        fit_error_range(i) = abs(fit_values(3) - conf(2,3));
+        %CycleTime(i) = fit_values(3);
         %% Plot per mass:
         if plot_every_mass
             figure
@@ -142,14 +146,16 @@ for i = 1:size(lab_results,1)
 end
 
 %% Plot for all mass
-%figure
-mass = cell2mat(lab_results(:,2))'.*1000;
-omega = 2*pi./CycleTime;
-%plot(mass,omega, '.')
+figure
 hold on
+mass = cell2mat(lab_results(:,2))' + pole_weight;
+omega = (2*pi./CycleTime);
+omega_error = fit_error_range;
+errorbar(mass,omega, omega_error, omega_error, mass_error , mass_error , 'color','magenta','LineStyle','none', 'LineWidth', 2)
+plot(mass,((52.96./mass)-0.0004786.^2./(4*(mass.^2))).^0.4959)
 xlabel('Mass(KG)')
 ylabel('omega(Rad/S)')
-legend('peaks', 'Fitted Curve')
+legend('omega vs mass')
 hold off
 
 function f = DampedHarmonic_fit(x, y, add_linear_damp)

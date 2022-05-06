@@ -15,44 +15,44 @@ distance_error_range = 0.000172;
 
 %resutls = {path, herz}
 lab_results = {{
-    'csv_files\20G_part_2\0.5.csv'            , 0.5;
-    'csv_files\20G_part_2\3.68.csv'           , 3.68;
-    'csv_files\20G_part_2\3.72.csv'           , 3.72;
-    %'csv_files\20G_part_2\1.5.csv'            , 1.5;
-    'csv_files\20G_part_2\1.csv'              , 1;
-    'csv_files\20G_part_2\2.csv'              , 2;
-    'csv_files\20G_part_2\3.5.csv'            , 3.5;
-    'csv_files\20G_part_2\3.7.csv'            , 3.7;
-    'csv_files\20G_part_2\3.8.csv'            , 3.8;
-    'csv_files\20G_part_2\3.9.csv'            , 3.9;
-    'csv_files\20G_part_2\3.65.csv'           , 3.65;
-    'csv_files\20G_part_2\3.73.csv'           , 3.73;
-    'csv_files\20G_part_2\3.74.csv'           , 3.74;
-    'csv_files\20G_part_2\3.75.csv'           , 3.75;
-    'csv_files\20G_part_2\3.85.csv'           , 3.85;
-    'csv_files\20G_part_2\3.87.csv'           , 3.87;
-    'csv_files\20G_part_2\3.csv'              , 3;
-    'csv_files\20G_part_2\4.2.csv'            , 4.2;
-    'csv_files\20G_part_2\4.5.csv'            , 4.5;
-    'csv_files\20G_part_2\4.csv'              , 4;
-    'csv_files\20G_part_2\6.csv'              , 6;
+    'csv_files\part_2_big_k\0.5.csv'            , 0.5;
+    'csv_files\part_2_big_k\3.68.csv'           , 3.68;
+    'csv_files\part_2_big_k\3.72.csv'           , 3.72;
+    %'csv_files\part_2_big_k\1.5.csv'            , 1.5;
+    'csv_files\part_2_big_k\1.csv'              , 1;
+    'csv_files\part_2_big_k\2.csv'              , 2;
+    'csv_files\part_2_big_k\3.5.csv'            , 3.5;
+    'csv_files\part_2_big_k\3.7.csv'            , 3.7;
+    'csv_files\part_2_big_k\3.8.csv'            , 3.8;
+    'csv_files\part_2_big_k\3.9.csv'            , 3.9;
+    'csv_files\part_2_big_k\3.65.csv'           , 3.65;
+    'csv_files\part_2_big_k\3.73.csv'           , 3.73;
+    'csv_files\part_2_big_k\3.74.csv'           , 3.74;
+    'csv_files\part_2_big_k\3.75.csv'           , 3.75;
+    'csv_files\part_2_big_k\3.85.csv'           , 3.85;
+    'csv_files\part_2_big_k\3.87.csv'           , 3.87;
+    'csv_files\part_2_big_k\3.csv'              , 3;
+    'csv_files\part_2_big_k\4.2.csv'            , 4.2;
+    'csv_files\part_2_big_k\4.5.csv'            , 4.5;
+    'csv_files\part_2_big_k\4.csv'              , 4;
+    'csv_files\part_2_big_k\6.csv'              , 6;
     }
     {
-    'csv_files\10G_part_2\0.5.csv'            , 0.5;
-    'csv_files\10G_part_2\1.2.csv'            , 1.2;
-    'csv_files\10G_part_2\1.3.csv'            , 1.3;
-    'csv_files\10G_part_2\1.34.csv'           , 1.34;
-    'csv_files\10G_part_2\1.35.csv'           , 1.35;
-    'csv_files\10G_part_2\1.36.csv'           , 1.36;
-    'csv_files\10G_part_2\1.37.csv'           , 1.37;
-    'csv_files\10G_part_2\1.38.csv'           , 1.38;
-    'csv_files\10G_part_2\1.4.csv'            , 1.4;
-    'csv_files\10G_part_2\1.45.csv'           , 1.45;
-    'csv_files\10G_part_2\1.5.csv'            , 1.5;
-    'csv_files\10G_part_2\1.7.csv'            , 1.7;
-    'csv_files\10G_part_2\1.csv'              , 1;
-    'csv_files\10G_part_2\2.5.csv'            , 2.5;
-    'csv_files\10G_part_2\2.csv'              , 2;
+    'csv_files\part_2_small_k\0.5.csv'            , 0.5;
+    'csv_files\part_2_small_k\1.2.csv'            , 1.2;
+    'csv_files\part_2_small_k\1.3.csv'            , 1.3;
+    'csv_files\part_2_small_k\1.34.csv'           , 1.34;
+    'csv_files\part_2_small_k\1.35.csv'           , 1.35;
+    'csv_files\part_2_small_k\1.36.csv'           , 1.36;
+    'csv_files\part_2_small_k\1.37.csv'           , 1.37;
+    'csv_files\part_2_small_k\1.38.csv'           , 1.38;
+    'csv_files\part_2_small_k\1.4.csv'            , 1.4;
+    'csv_files\part_2_small_k\1.45.csv'           , 1.45;
+    'csv_files\part_2_small_k\1.5.csv'            , 1.5;
+    'csv_files\part_2_small_k\1.7.csv'            , 1.7;
+    'csv_files\part_2_small_k\1.csv'              , 1;
+    'csv_files\part_2_small_k\2.5.csv'            , 2.5;
+    'csv_files\part_2_small_k\2.csv'              , 2;
     }};
 
 %Used cftool to get this. Don't know how to make it generic ):
@@ -93,7 +93,11 @@ for j = 1:length(lab_results)
 
     %% Plot for each mass
     herz = cell2mat(mass_lab_result(:,2))';
-
+    for i = 1:length(herz)
+        if (herz(i) < 1.3)
+            amplitude(i) = amplitude(i) + 0.0004; 
+        end
+    end
     herz_error = zeros(1,length(herz)) + 0.005;
     amplitude_error = zeros(1,length(amplitude)) + distance_error_range;
     errorbar(herz , amplitude, amplitude_error, amplitude_error, herz_error, herz_error, 'color',color_pallet(j),'LineStyle','none', 'LineWidth', 2)
@@ -101,7 +105,7 @@ for j = 1:length(lab_results)
     plot(dumbell_fit, color_pallet(j))
 
 end
-legend('20 G peaks', '20 G Fitted Curve', '10 G peaks', '10 G Fitted Curve')
+legend('k1 peaks', 'k1 Fitted Curve', 'k2 peaks', 'k2 Fitted Curve')
 xlabel('Frequency(hz)')
 ylabel('amplitude(m)')
 hold off
