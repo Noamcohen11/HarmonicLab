@@ -19,7 +19,7 @@ add_linear_damp = 0;
 %resutls = {path, mass in kg}
 lab_results = {
        'csv_files\5 G part 2.csv'     , 0.0048;
-       'csv_files\10 G part 2.csv'    , 0.098;
+       'csv_files\10 G part 2.csv'    , 0.0098;
        'csv_files\14.6 G part 2.csv'  , 0.0146;
        'csv_files\20 G part 1.csv'    , 0.0199;
        'csv_files\25G.csv'             , 0.0247;
@@ -130,6 +130,9 @@ for i = 1:size(lab_results,1)
             xlabel('Time(S)')
             ylabel('peaks(M)')
             legend('peaks', 'Fitted Curve')
+            if ~add_linear_damp
+                set(gca,'YScale','log');
+            end
             hold off
             f = gcf;
             exportgraphics(f,[image_save_path 'part_2_' damp_style char(string(lab_results(i,2))) '.png'],'Resolution',300);
