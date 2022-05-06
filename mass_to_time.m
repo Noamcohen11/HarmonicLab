@@ -14,28 +14,33 @@ distance_units_in_meters= 1;
 time_units_in_secs = 1;
 distance_error_range = 0.000172;
 image_save_path = 'G:\My Drive\results\';
+add_linear_damp = 0;
 
 %resutls = {path, mass in kg}
 lab_results = {
-     'csv_files\5 G part 2.csv'     , 0.0048;
-      'csv_files\10 G part 2.csv'    , 0.098;
-      'csv_files\14.6 G part 2.csv'  , 0.0146;
-      'csv_files\20 G part 1.csv'    , 0.0199;
-      'csv_files\25G.csv'             , 0.0247;
-      'csv_files\30G.csv'             , 0.0297;
-      'csv_files\35G.csv'             , 0.0345;
-      'csv_files\50.2 G.csv'          , 0.0502;
-      'csv_files\55G.csv'             , 0.055;
-      'csv_files\60G.csv'             , 0.060;
-      'csv_files\64.8G.csv'           , 0.0648;
-      'csv_files\70.1G.csv'           , 0.0701;
-      'csv_files\84 G part 2.csv'    , 0.0847;   
+       'csv_files\5 G part 2.csv'     , 0.0048;
+       'csv_files\10 G part 2.csv'    , 0.098;
+       'csv_files\14.6 G part 2.csv'  , 0.0146;
+       'csv_files\20 G part 1.csv'    , 0.0199;
+       'csv_files\25G.csv'             , 0.0247;
+       'csv_files\30G.csv'             , 0.0297;
+       'csv_files\35G.csv'             , 0.0345;
+       'csv_files\50.2 G.csv'          , 0.0502;
+       'csv_files\55G.csv'             , 0.055;
+       'csv_files\60G.csv'             , 0.060;
+       'csv_files\64.8G.csv'           , 0.0648;
+       'csv_files\70.1G.csv'           , 0.0701;
+       'csv_files\84 G part 2.csv'    , 0.0847;   
     };
 
 %% code:
 % Fit each result:
 
 CycleTime = zeros(1,size(lab_results,1));
+damp_style = 'clean_';
+if add_linear_damp
+    damp_style = 'lin_';
+end 
 
 for i = 1:size(lab_results,1)
     results = readtable(string(lab_results(i,1)));
@@ -88,11 +93,11 @@ for i = 1:size(lab_results,1)
         [c1,d1] =sort(m1);
         x = b(d1);
         y = y(m1);
-        final_fit = DampedHarmonic_fit(x,y);
+        final_fit = DampedHarmonic_fit(x,y, add_linear_damp);
         
         % Find peaks:
         [pks,locs] = findpeaks(y,x);
-        amplitude_fit = DampedAmplitudeFit(locs,pks);
+        amplitude_fit = DampedAmplitudeFit(locs,pks, add_linear_damp);
         peak_error = zeros(1,length(locs)) + distance_error_range;
         time_error = zeros(1,length(locs));
         %CycleTime(i) = mean(diff(locs(2:10)));
@@ -113,7 +118,7 @@ for i = 1:size(lab_results,1)
             ylabel('Distance(M)')
             legend('Original Data', 'peaks', 'Fitted Curve')
             f = gcf;
-            exportgraphics(f,[image_save_path 'part_1_' char(string(lab_results(i,2))) '.png'],'Resolution',300);
+            exportgraphics(f,[image_save_path 'part_1_' damp_style char(string(lab_results(i,2))) '.png'],'Resolution',300);
 
             %Plot peaks per time
             figure
@@ -127,7 +132,7 @@ for i = 1:size(lab_results,1)
             legend('peaks', 'Fitted Curve')
             hold off
             f = gcf;
-            exportgraphics(f,[image_save_path 'part_2_' char(string(lab_results(i,2))) '.png'],'Resolution',300);
+            exportgraphics(f,[image_save_path 'part_2_' damp_style char(string(lab_results(i,2))) '.png'],'Resolution',300);
             
         end
     end
@@ -144,7 +149,7 @@ ylabel('omega(Rad/S)')
 legend('peaks', 'Fitted Curve')
 hold off
 
-function f = DampedHarmonic_fit(x, y)
+function f = DampedHarmonic_fit(x, y, add_linear_damp)
     %% Get fit parametes:
     
     y = detrend(y);                                                                      % Remove Linear Trend
@@ -156,18 +161,35 @@ function f = DampedHarmonic_fit(x, y)
     per = 2*mean(diff(zt));                                                              % Estimate period
     ym = mean(y);                                                                        % Estimate offset
     
-    init_fit = @(b,x)  b(1) .* exp(b(2).*x-b(3)) .* (cos(2*pi*x./b(4) + 2*pi/b(5))) + b(6);   % Objective Function to fit
-    fcn = @(b) norm(init_fit(b,x) - y);                                              % Least-Squares cost function
-    [s,] = fminsearch(fcn, [yr; -10; 0;  per;  -1;  ym]);                                   % Minimise Least-Squares
-    fit_params = s';
-    %% Fit:
-    fo = fitoptions('Method','NonlinearLeastSquares', 'StartPoint', fit_params);         % Use the parameters gathered as starting points.
-    fitt = fittype('(a.*exp(b*x)- c*x).*(cos(2*pi.*x/d + 2.*pi./e)) + f','coefficients', {'a', 'b', 'c', 'd', 'e', 'f'}, 'options', fo);
-    f = fit(x,y,fitt);
+    if add_linear_damp
+        init_fit = @(b,x)  b(1) .* exp(b(2).*x-b(3)*x) .* (cos(2*pi*x./b(4) + 2*pi/b(5))) + b(6);   % Objective Function to fit
+        fcn = @(b) norm(init_fit(b,x) - y);                                              % Least-Squares cost function
+        [s,] = fminsearch(fcn, [yr; -10; 0;  per;  -1;  ym]);                                   % Minimise Least-Squares
+        fit_params = s';
+        %% Fit:
+        fo = fitoptions('Method','NonlinearLeastSquares', 'StartPoint', fit_params);         % Use the parameters gathered as starting points.
+        fitt = fittype('(a.*exp(b*x)- c*x).*(cos(2*pi.*x/d + 2.*pi./e)) + f','coefficients', {'a', 'b', 'c', 'd', 'e', 'f'}, 'options', fo);
+        f = fit(x,y,fitt);    
+    else
+        init_fit = @(b,x)  b(1) .* exp(b(2).*x) .* (cos(2*pi*x./b(3) + 2*pi/b(4))) + b(5);   % Objective Function to fit
+        fcn = @(b) norm(init_fit(b,x) - y);                                              % Least-Squares cost function
+        [s,] = fminsearch(fcn, [yr; -10; per;  -1;  ym]);                                   % Minimise Least-Squares        
+        fit_params = s';
+        %% Fit:
+        fo = fitoptions('Method','NonlinearLeastSquares', 'StartPoint', fit_params);         % Use the parameters gathered as starting points.
+        fitt = fittype('a.*exp(b*x).*(cos(2*pi.*x/c + 2.*pi./d)) + e','coefficients', {'a', 'b', 'c', 'd', 'e'}, 'options', fo);
+        f = fit(x,y,fitt);
+    end
 end
 
-function f = DampedAmplitudeFit(x, y)
-    fitt = fittype('a*exp(-b*x) -c*x','coefficients', {'a', 'b', 'c'});
+function f = DampedAmplitudeFit(x, y, add_linear_damp)
+    linear_damp = '+ c*x';
+    coefficients = {'a', 'b', 'c'};
+    if ~add_linear_damp
+        linear_damp = '';
+        coefficients = {'a', 'b'};
+    end
+    fitt = fittype(['a*exp(-b*x)' linear_damp],'coefficients', coefficients);
     f = fit(x,y,fitt);
 end
 
