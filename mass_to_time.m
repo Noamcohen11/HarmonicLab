@@ -13,22 +13,23 @@ plot_every_mass = 1;
 distance_units_in_meters= 1;
 time_units_in_secs = 1;
 distance_error_range = 0.000172;
+image_save_path = 'G:\My Drive\results\';
 
 %resutls = {path, mass in kg}
 lab_results = {
-    %'csv_files\5 G part 2.csv'     , 0.0048;
-    %'csv_files\10 G part 2.csv'    , 0.098;
-    %'csv_files\14.6 G part 2.csv'  , 0.0146;
-    %'csv_files\20 G part 1.csv'    , 0.0199;
-    'csv_files\25G.csv'             , 0.0247;
-    %'csv_files\30G.csv'             , 0.0297;
-    %'csv_files\35G.csv'             , 0.0345;
-    %'csv_files\50.2 G.csv'             , 0.0502;
-    %'csv_files\55G.csv'             , 0.055;
-    %'csv_files\60G.csv'             , 0.060;
-    %'csv_files\64.8G.csv'            , 0.0648;
-    %'csv_files\70.1G.csv'           , 0.0701;
-    %'csv_files\84 G part 2.csv'    , 0.0847;   
+     'csv_files\5 G part 2.csv'     , 0.0048;
+      'csv_files\10 G part 2.csv'    , 0.098;
+      'csv_files\14.6 G part 2.csv'  , 0.0146;
+      'csv_files\20 G part 1.csv'    , 0.0199;
+      'csv_files\25G.csv'             , 0.0247;
+      'csv_files\30G.csv'             , 0.0297;
+      'csv_files\35G.csv'             , 0.0345;
+      'csv_files\50.2 G.csv'          , 0.0502;
+      'csv_files\55G.csv'             , 0.055;
+      'csv_files\60G.csv'             , 0.060;
+      'csv_files\64.8G.csv'           , 0.0648;
+      'csv_files\70.1G.csv'           , 0.0701;
+      'csv_files\84 G part 2.csv'    , 0.0847;   
     };
 
 %% code:
@@ -37,11 +38,11 @@ lab_results = {
 CycleTime = zeros(1,size(lab_results,1));
 
 for i = 1:size(lab_results,1)
-    for k = 0:fix(size(results,2)/4)
+    results = readtable(string(lab_results(i,1)));
+    for k = 1:max(fix(size(results,2)/4),1)
         %% Grab lab lab_results
-        results = readtable(string(lab_results(i,1)));
-        y = results{:,2+k*4};
-        x = results{:,1+k*4};
+        y = results{:,2+(k-1)*4};
+        x = results{:,1+(k-1)*4};
         x = rmmissing(x);
         y = rmmissing(y);
         
@@ -75,7 +76,7 @@ for i = 1:size(lab_results,1)
         
         %Remove data captured after the experiment ends:
         for j = 60:length(x)
-            if (abs(y(j))<distance_error_range) && (abs(y(j-5))<distance_error_range)
+            if (abs(y(j))<distance_error_range) && (abs(y(j-15))<distance_error_range)
                 x(j:length(x)) = [];
                 y(j:length(y)) = [];
             break
@@ -111,7 +112,9 @@ for i = 1:size(lab_results,1)
             xlabel('Time(S)')
             ylabel('Distance(M)')
             legend('Original Data', 'peaks', 'Fitted Curve')
-            
+            f = gcf;
+            exportgraphics(f,[image_save_path 'part_1_' char(string(lab_results(i,2))) '.png'],'Resolution',300);
+
             %Plot peaks per time
             figure
             hold on
@@ -123,14 +126,18 @@ for i = 1:size(lab_results,1)
             ylabel('peaks(M)')
             legend('peaks', 'Fitted Curve')
             hold off
+            f = gcf;
+            exportgraphics(f,[image_save_path 'part_2_' char(string(lab_results(i,2))) '.png'],'Resolution',300);
+            
         end
     end
 end
 
 %% Plot for all mass
-figure
-mass = cell2mat(lab_results(:,2))';
-plot(cell2mat(lab_results(:,2))',2*pi./CycleTime, '.')
+%figure
+mass = cell2mat(lab_results(:,2))'.*1000;
+omega = 2*pi./CycleTime;
+%plot(mass,omega, '.')
 hold on
 xlabel('Mass(KG)')
 ylabel('omega(Rad/S)')
@@ -149,18 +156,18 @@ function f = DampedHarmonic_fit(x, y)
     per = 2*mean(diff(zt));                                                              % Estimate period
     ym = mean(y);                                                                        % Estimate offset
     
-    init_fit = @(b,x)  b(1) .* exp(b(2).*x) .* (cos(2*pi*x./b(3) + 2*pi/b(4))) + b(5);   % Objective Function to fit
-    fcn = @(b) norm(init_fit(b,x) - y);                                                  % Least-Squares cost function
-    [s,] = fminsearch(fcn, [yr; -10;  per;  -1;  ym]);                                   % Minimise Least-Squares
+    init_fit = @(b,x)  b(1) .* exp(b(2).*x-b(3)) .* (cos(2*pi*x./b(4) + 2*pi/b(5))) + b(6);   % Objective Function to fit
+    fcn = @(b) norm(init_fit(b,x) - y);                                              % Least-Squares cost function
+    [s,] = fminsearch(fcn, [yr; -10; 0;  per;  -1;  ym]);                                   % Minimise Least-Squares
     fit_params = s';
     %% Fit:
     fo = fitoptions('Method','NonlinearLeastSquares', 'StartPoint', fit_params);         % Use the parameters gathered as starting points.
-    fitt = fittype('a.*exp(b*x).*(cos(2*pi.*x/c + 2.*pi./d))+e','coefficients', {'a', 'b', 'c', 'd', 'e'}, 'options', fo);
+    fitt = fittype('(a.*exp(b*x)- c*x).*(cos(2*pi.*x/d + 2.*pi./e)) + f','coefficients', {'a', 'b', 'c', 'd', 'e', 'f'}, 'options', fo);
     f = fit(x,y,fitt);
 end
 
 function f = DampedAmplitudeFit(x, y)
-    fitt = fittype('a*exp(-b*x)+c','coefficients', {'a', 'b', 'c'});
+    fitt = fittype('a*exp(-b*x) -c*x','coefficients', {'a', 'b', 'c'});
     f = fit(x,y,fitt);
 end
 
